@@ -63,8 +63,9 @@ export function ConversationProvider({ children }) {
   const [dataScope, setDataScope] = useState({
     countries: [],      // [] = all countries
     healthAreas: [],    // [] = all health areas
+    segment: '',        // free-text population / segment focus
     dataSource: 'all',  // 'all' | 'pathways-only'
-    vintage: 'latest',  // 'latest' | '2023' | '2022'
+    vintage: 'latest',  // 'latest' | '2024' | '2023' | '2022'
   });
 
   const streamingTextRef = useRef('');

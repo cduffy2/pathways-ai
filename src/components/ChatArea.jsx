@@ -65,12 +65,12 @@ export default function ChatArea() {
         <WorkflowBanner onDismiss={dismissWorkflowBanner} />
       )}
 
-      {/* Prompt builder — always visible */}
-      <PromptBuilder onSend={handleSend} />
+      {/* Compact scope bar — only once conversation is active */}
+      {hasMessages && <PromptBuilder onSend={handleSend} />}
 
       {/* Main area */}
       {!hasMessages ? (
-        <OnboardingState onChipClick={handleSend} />
+        <OnboardingState onChipClick={handleSend} onSend={handleSend} />
       ) : (
         <>
           {/* Messages */}
