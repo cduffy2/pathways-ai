@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #FAFAF8;
+  --color-surface: #F2F0EB;
+  --color-surface-hover: #E8E5DE;
+  --color-gold: #C8A84B;
+  --color-gold-light: #D9BD72;
+  --color-gold-muted: rgba(200, 168, 75, 0.15);
+  --color-charcoal: #1A1A1A;
+  --color-charcoal-muted: #4A4A4A;
+  --color-charcoal-light: #6B6B6B;
+  --color-teal: #2A9D8F;
+  --color-teal-light: #52B5A8;
+  --color-teal-muted: rgba(42, 157, 143, 0.12);
+  --color-border: #E0DDD7;
+  --color-border-strong: #C8C4BC;
+  --color-error: #C0392B;
+  --color-error-muted: rgba(192, 57, 43, 0.1);
+  --color-success: #27AE60;
+
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+}
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #FAFAF8;
+    color: #1A1A1A;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #E0DDD7 transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #E0DDD7;
+    border-radius: 2px;
+  }
+}
