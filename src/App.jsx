@@ -7,16 +7,10 @@ import ChatArea from './components/ChatArea';
 import SourceDrawer from './components/SourceDrawer';
 
 function AppShell() {
-  const { sendMessage, openSourceDrawer, activeSourceData, sourceDrawerOpen } = useConversation();
+  const { openSourceDrawer, activeSourceData } = useConversation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleSendPrompt = (text) => {
-    sendMessage(text);
-    setSidebarOpen(false);
-  };
-
   const handleOpenSourceDrawer = () => {
-    // Open drawer with most recent source data if available
     if (activeSourceData) {
       openSourceDrawer(activeSourceData);
     }
@@ -50,7 +44,7 @@ function AppShell() {
         `}
         style={{ height: '100%' }}
       >
-        <Sidebar onSendPrompt={handleSendPrompt} />
+        <Sidebar />
       </div>
 
       {/* Main chat area */}

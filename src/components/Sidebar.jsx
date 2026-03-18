@@ -1,10 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Plus, MessageSquare, Trash2, Edit2, Check, X, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { Plus, MessageSquare, Trash2, Edit2, Check, X, MoreHorizontal } from 'lucide-react';
 import { useConversation } from '../hooks/useConversation';
 import MCPStatus from './MCPStatus';
 import ModelSelector from './ModelSelector';
-import PromptTemplate from './PromptTemplate';
-import { promptTemplates } from '../data/promptTemplates';
 import { useMCP } from '../hooks/useMCP';
 
 function ConversationItem({ conv, isActive, onSelect, onDelete, onRename }) {
@@ -115,7 +113,7 @@ function ConversationItem({ conv, isActive, onSelect, onDelete, onRename }) {
   );
 }
 
-export default function Sidebar({ onSendPrompt }) {
+export default function Sidebar() {
   const {
     conversations,
     activeConversationId,
@@ -128,7 +126,6 @@ export default function Sidebar({ onSendPrompt }) {
   } = useConversation();
 
   const mcp = useMCP();
-  const [promptsOpen, setPromptsOpen] = useState(true);
 
   return (
     <aside
@@ -188,34 +185,6 @@ export default function Sidebar({ onSendPrompt }) {
               onRename={renameConversation}
             />
           ))
-        )}
-      </div>
-
-      {/* Prompts panel */}
-      <div className="border-t border-[#E0DDD7]">
-        <button
-          onClick={() => setPromptsOpen((v) => !v)}
-          className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-[#E8E5DE] transition-colors"
-          aria-expanded={promptsOpen}
-        >
-          <span className="text-[#4A4A4A] text-[10px] uppercase tracking-wider font-semibold">
-            Prompts
-          </span>
-          <ChevronDown
-            size={12}
-            className={`text-[#6B6B6B] transition-transform ${promptsOpen ? '' : '-rotate-90'}`}
-          />
-        </button>
-        {promptsOpen && (
-          <div className="px-3 pb-3 space-y-2">
-            {promptTemplates.map((template) => (
-              <PromptTemplate
-                key={template.id}
-                template={template}
-                onSend={onSendPrompt}
-              />
-            ))}
-          </div>
         )}
       </div>
 

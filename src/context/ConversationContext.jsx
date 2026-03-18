@@ -13,9 +13,10 @@ const generateTitle = (text) => {
 const simulateAssistantResponse = async (userMessage, onToken, onDone) => {
   const responses = [
     `**Pathways data overview**\n\nBased on your query about "${userMessage.slice(0, 40)}...", here's what the Pathways platform shows:\n\n`,
-    `### Key findings\n\n- The Pathways segmentation methodology identifies **8 core vulnerability dimensions** including household poverty, geographic isolation, and health system access.\n- Data coverage spans **23 countries** across Sub-Saharan Africa and South Asia.\n- Subnational data is available for **14 priority countries**.\n\n`,
-    `### Recommended next steps\n\nYou can narrow this down by specifying a country or health area. The segment profiles for **rural women aged 18–35** in high-burden regions show the strongest concentration of compound risk factors.\n\n`,
-    `*Source: Pathways segmentation platform, 2024 baseline data.*`,
+    `### Key findings\n\n- The Pathways segmentation methodology identifies **8 core vulnerability dimensions** including household poverty, geographic isolation, and health system access. [P1]\n- Data coverage spans **23 countries** across Sub-Saharan Africa and South Asia. [P2]\n- Subnational data is available for **14 priority countries**, with the highest granularity in Nigeria, Ethiopia, and Senegal. [P1]\n\n`,
+    `### Vulnerability distribution\n\nAcross high-burden countries, compound risk is concentrated among rural women with low education and limited health system proximity. [P2] DHS data confirms this pattern holds across survey cycles. [E1]\n\n`,
+    `### Recommended next steps\n\nThe segment profiles for **rural women aged 18–35** in high-burden regions show the strongest concentration of compound risk factors. You can narrow this further by country or health area. [P1]\n\n`,
+    `*Confidence is high — this response draws primarily from verified Pathways segmentation data.*`,
   ];
 
   const fullText = responses.join('');
@@ -41,9 +42,12 @@ const simulateAssistantResponse = async (userMessage, onToken, onDone) => {
       explanation: 'This response draws primarily from verified Pathways segmentation data for the requested geography.',
     },
     references: [
-      { id: 1, title: 'Pathways Health Segmentation Methodology', source: 'Gates Foundation', url: null },
-      { id: 2, title: 'DHS Household Survey — Senegal 2022', source: 'DHS Programme', url: null },
+      { id: 'P1', type: 'pathways', title: 'Pathways Health Segmentation Methodology', source: 'Pathways Platform', url: null },
+      { id: 'P2', type: 'pathways', title: 'Country Vulnerability Profiles 2024', source: 'Pathways Platform', url: null },
+      { id: 'E1', type: 'external', title: 'DHS Household Survey — Senegal 2022', source: 'DHS Programme', url: null },
     ],
+    // Map of citation keys used inline → reference ids
+    citationMap: { P1: 'P1', P2: 'P2', E1: 'E1' },
   });
 };
 
@@ -56,6 +60,12 @@ export function ConversationProvider({ children }) {
   const [activeSourceData, setActiveSourceData] = useState(null);
   const [workflowBannerVisible, setWorkflowBannerVisible] = useState(false);
   const [selectedModel, setSelectedModel] = useState('gpt-5-2');
+  const [dataScope, setDataScope] = useState({
+    countries: [],      // [] = all countries
+    healthAreas: [],    // [] = all health areas
+    dataSource: 'all',  // 'all' | 'pathways-only'
+    vintage: 'latest',  // 'latest' | '2023' | '2022'
+  });
 
   const streamingTextRef = useRef('');
 
@@ -243,6 +253,8 @@ export function ConversationProvider({ children }) {
         workflowBannerVisible,
         selectedModel,
         setSelectedModel,
+        dataScope,
+        setDataScope,
         createConversation,
         deleteConversation,
         renameConversation,

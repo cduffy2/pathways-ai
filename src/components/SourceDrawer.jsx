@@ -27,10 +27,18 @@ function SourceItem({ source, accent }) {
 }
 
 function ReferenceItem({ ref: reference }) {
+  const isPathways = reference.type === 'pathways';
   return (
     <div className="flex items-start gap-2 py-2 border-b border-[#F2F0EB] last:border-0">
-      <span className="text-[#6B6B6B] text-[10px] font-mono w-5 flex-shrink-0 mt-0.5">
-        [{reference.id}]
+      <span
+        className="text-[10px] font-bold px-1.5 py-0.5 rounded flex-shrink-0 mt-0.5"
+        style={
+          isPathways
+            ? { background: 'rgba(42,157,143,0.15)', color: '#2A9D8F', border: '1px solid rgba(42,157,143,0.3)' }
+            : { background: 'rgba(107,107,107,0.12)', color: '#6B6B6B', border: '1px solid rgba(107,107,107,0.25)' }
+        }
+      >
+        {reference.id}
       </span>
       <div className="flex-1 min-w-0">
         <p className="text-[#1A1A1A] text-[11px] font-medium leading-snug">{reference.title}</p>

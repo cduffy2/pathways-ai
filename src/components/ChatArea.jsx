@@ -3,6 +3,8 @@ import { BookOpen, X, AlertTriangle } from 'lucide-react';
 import { useConversation } from '../hooks/useConversation';
 import OnboardingState from './OnboardingState';
 import MessageBubble from './MessageBubble';
+import PromptLauncher from './PromptLauncher';
+import ScopeBar from './ScopeBar';
 
 function WorkflowBanner({ onDismiss }) {
   return (
@@ -82,23 +84,29 @@ export default function ChatArea({ onOpenSourceDrawer }) {
         <WorkflowBanner onDismiss={dismissWorkflowBanner} />
       )}
 
+      {/* Scope bar — always visible */}
+      <ScopeBar />
+
       {/* Toolbar (only when conversation is active) */}
       {hasMessages && (
-        <div className="flex items-center justify-between px-4 py-2 border-b border-[#E0DDD7] bg-white">
-          <div className="text-[#1A1A1A] text-sm font-medium truncate">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-[#E0DDD7] bg-white gap-2">
+          <div className="text-[#1A1A1A] text-sm font-medium truncate flex-1">
             {activeConversation?.title || 'Conversation'}
           </div>
-          <button
-            onClick={onOpenSourceDrawer}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              sourceDrawerOpen
-                ? 'bg-[rgba(42,157,143,0.12)] text-[#2A9D8F]'
-                : 'text-[#6B6B6B] hover:bg-[#F2F0EB] hover:text-[#1A1A1A]'
-            }`}
-          >
-            <BookOpen size={13} />
-            Sources
-          </button>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <PromptLauncher onSend={handleSend} />
+            <button
+              onClick={onOpenSourceDrawer}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                sourceDrawerOpen
+                  ? 'bg-[rgba(42,157,143,0.12)] text-[#2A9D8F]'
+                  : 'text-[#6B6B6B] hover:bg-[#F2F0EB] hover:text-[#1A1A1A]'
+              }`}
+            >
+              <BookOpen size={13} />
+              Sources
+            </button>
+          </div>
         </div>
       )}
 
