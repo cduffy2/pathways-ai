@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Plus, MessageSquare, Trash2, Edit2, Check, X, MoreHorizontal } from 'lucide-react';
 import { useConversation } from '../hooks/useConversation';
-import MCPStatus from './MCPStatus';
-import { useMCP } from '../hooks/useMCP';
 
 function ConversationItem({ conv, isActive, onSelect, onDelete, onRename }) {
   const [hovered, setHovered] = useState(false);
@@ -119,8 +117,6 @@ export default function Sidebar() {
     renameConversation,
   } = useConversation();
 
-  const mcp = useMCP();
-
   return (
     <aside
       className="flex flex-col h-full bg-[#F2F0EB] border-r border-[#E0DDD7]"
@@ -160,13 +156,6 @@ export default function Sidebar() {
         )}
       </div>
 
-      {/* MCP status */}
-      <MCPStatus
-        connected={mcp.connected}
-        tools={mcp.tools}
-        serverUrl={mcp.serverUrl}
-        error={mcp.error}
-      />
     </aside>
   );
 }
