@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { BookOpen, X, AlertTriangle } from 'lucide-react';
+import { AlertTriangle, X } from 'lucide-react';
 import { useConversation } from '../hooks/useConversation';
 import OnboardingState from './OnboardingState';
 import MessageBubble from './MessageBubble';
-import PromptLauncher from './PromptLauncher';
-import ScopeBar from './ScopeBar';
+import PromptBuilder from './PromptBuilder';
 
 function WorkflowBanner({ onDismiss }) {
   return (
@@ -20,7 +19,7 @@ function WorkflowBanner({ onDismiss }) {
   );
 }
 
-export default function ChatArea({ onOpenSourceDrawer }) {
+export default function ChatArea() {
   const {
     activeConversation,
     isStreaming,
@@ -28,27 +27,23 @@ export default function ChatArea({ onOpenSourceDrawer }) {
     sendMessage,
     workflowBannerVisible,
     dismissWorkflowBanner,
-    sourceDrawerOpen,
   } = useConversation();
 
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
   const textareaRef = useRef(null);
 
   const messages = activeConversation?.messages || [];
   const hasMessages = messages.length > 0;
 
-  // Auto-scroll to bottom
+  // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages.length, isStreaming]);
 
-  // Listen for follow-up prompt clicks
+  // Follow-up event
   useEffect(() => {
-    const handler = (e) => {
-      handleSend(e.detail);
-    };
+    const handler = (e) => handleSend(e.detail);
     window.addEventListener('pathways:followup', handler);
     return () => window.removeEventListener('pathways:followup', handler);
   }, []);
@@ -60,10 +55,6 @@ export default function ChatArea({ onOpenSourceDrawer }) {
     await sendMessage(trimmed);
   }, [inputValue, sendMessage]);
 
-  const handleChipClick = (chip) => {
-    handleSend(chip);
-  };
-
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
@@ -72,10 +63,10 @@ export default function ChatArea({ onOpenSourceDrawer }) {
     }
   }, [inputValue]);
 
-  // Find last assistant message for follow-ups
-  const lastAssistantIdx = messages.reduceRight((acc, m, i) => {
-    return acc === -1 && m.role === 'assistant' ? i : acc;
-  }, -1);
+  const lastAssistantIdx = messages.reduceRight(
+    (acc, m, i) => (acc === -1 && m.role === 'assistant' ? i : acc),
+    -1
+  );
 
   return (
     <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-[#FAFAF8]">
@@ -84,36 +75,13 @@ export default function ChatArea({ onOpenSourceDrawer }) {
         <WorkflowBanner onDismiss={dismissWorkflowBanner} />
       )}
 
-      {/* Scope bar — always visible */}
-      <ScopeBar />
-
-      {/* Toolbar (only when conversation is active) */}
-      {hasMessages && (
-        <div className="flex items-center justify-between px-4 py-2 border-b border-[#E0DDD7] bg-white gap-2">
-          <div className="text-[#1A1A1A] text-sm font-medium truncate flex-1">
-            {activeConversation?.title || 'Conversation'}
-          </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
-            <PromptLauncher onSend={handleSend} />
-            <button
-              onClick={onOpenSourceDrawer}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                sourceDrawerOpen
-                  ? 'bg-[rgba(42,157,143,0.12)] text-[#2A9D8F]'
-                  : 'text-[#6B6B6B] hover:bg-[#F2F0EB] hover:text-[#1A1A1A]'
-              }`}
-            >
-              <BookOpen size={13} />
-              Sources
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Prompt builder — always visible */}
+      <PromptBuilder onSend={handleSend} />
 
       {/* Main area */}
       {!hasMessages ? (
         <OnboardingState
-          onChipClick={handleChipClick}
+          onChipClick={(chip) => handleSend(chip)}
           onInputChange={setInputValue}
           onSubmit={() => handleSend()}
           inputValue={inputValue}
@@ -135,7 +103,6 @@ export default function ChatArea({ onOpenSourceDrawer }) {
                   }
                 />
               ))}
-              {/* Global error */}
               {error && (
                 <div className="flex items-center gap-2 px-4 py-2.5 bg-[rgba(192,57,43,0.08)] border border-[rgba(192,57,43,0.2)] rounded-lg text-xs text-[#C0392B] mb-4">
                   <AlertTriangle size={13} />
@@ -146,8 +113,8 @@ export default function ChatArea({ onOpenSourceDrawer }) {
             </div>
           </div>
 
-          {/* Input area */}
-          <div className="border-t border-[#E0DDD7] bg-white px-4 py-3">
+          {/* Input */}
+          <div className="border-t border-[#E0DDD7] bg-white px-4 py-3 flex-shrink-0">
             <div className="max-w-3xl mx-auto">
               <div className="flex gap-2 bg-[#FAFAF8] border border-[#E0DDD7] rounded-xl px-3 py-2 focus-within:border-[#C8A84B] focus-within:ring-2 focus-within:ring-[rgba(200,168,75,0.15)] transition-all">
                 <textarea
@@ -160,7 +127,7 @@ export default function ChatArea({ onOpenSourceDrawer }) {
                       handleSend();
                     }
                   }}
-                  placeholder="Ask about Pathways health data..."
+                  placeholder="Ask about Pathways health data…"
                   rows={1}
                   disabled={isStreaming}
                   className="flex-1 bg-transparent text-[#1A1A1A] text-sm placeholder:text-[#6B6B6B] resize-none focus:outline-none leading-relaxed disabled:opacity-50 overflow-hidden"
@@ -170,7 +137,7 @@ export default function ChatArea({ onOpenSourceDrawer }) {
                   onClick={() => handleSend()}
                   disabled={!inputValue.trim() || isStreaming}
                   className="self-end p-2 bg-[#C8A84B] hover:bg-[#B89638] disabled:bg-[#E0DDD7] text-white rounded-lg transition-colors flex-shrink-0"
-                  aria-label="Send message"
+                  aria-label="Send"
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"/>

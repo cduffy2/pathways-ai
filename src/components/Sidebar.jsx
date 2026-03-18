@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { Plus, MessageSquare, Trash2, Edit2, Check, X, MoreHorizontal } from 'lucide-react';
 import { useConversation } from '../hooks/useConversation';
 import MCPStatus from './MCPStatus';
-import ModelSelector from './ModelSelector';
 import { useMCP } from '../hooks/useMCP';
 
 function ConversationItem({ conv, isActive, onSelect, onDelete, onRename }) {
@@ -21,13 +20,11 @@ function ConversationItem({ conv, isActive, onSelect, onDelete, onRename }) {
   }, [renaming]);
 
   useEffect(() => {
-    const handleClick = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuOpen(false);
-      }
+    const handler = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
     };
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
   }, []);
 
   const handleRenameSubmit = () => {
@@ -36,8 +33,7 @@ function ConversationItem({ conv, isActive, onSelect, onDelete, onRename }) {
     setRenaming(false);
   };
 
-  const date = new Date(conv.updatedAt);
-  const timeLabel = date.toLocaleDateString('en-GB', {
+  const timeLabel = new Date(conv.updatedAt).toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
   });
@@ -121,8 +117,6 @@ export default function Sidebar() {
     createConversation,
     deleteConversation,
     renameConversation,
-    selectedModel,
-    setSelectedModel,
   } = useConversation();
 
   const mcp = useMCP();
@@ -130,34 +124,13 @@ export default function Sidebar() {
   return (
     <aside
       className="flex flex-col h-full bg-[#F2F0EB] border-r border-[#E0DDD7]"
-      style={{ width: 260, minWidth: 260, maxWidth: 260 }}
+      style={{ width: 240, minWidth: 240, maxWidth: 240 }}
     >
-      {/* App identity */}
-      <div className="px-4 py-4 border-b border-[#E0DDD7]">
-        <div className="flex items-center gap-2.5 mb-0.5">
-          {/* Icon */}
-          <div className="w-7 h-7 rounded-lg bg-[#C8A84B] flex items-center justify-center flex-shrink-0">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M8 2C5.239 2 3 4.239 3 7c0 1.657.806 3.124 2.044 4.033L4.5 14h7l-.544-2.967C12.194 10.124 13 8.657 13 7c0-2.761-2.239-5-5-5z" fill="white" fillOpacity="0.9"/>
-              <circle cx="8" cy="7" r="2" fill="#C8A84B"/>
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-[#1A1A1A] text-sm font-semibold leading-none tracking-tight">
-              Pathways AI
-            </h1>
-            <p className="text-[#6B6B6B] text-[10px] mt-0.5 leading-none">
-              Health segmentation assistant
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Model selector */}
-      <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
-
       {/* New conversation */}
-      <div className="px-3 py-3 border-b border-[#E0DDD7]">
+      <div className="px-3 pt-4 pb-3 border-b border-[#E0DDD7]">
+        <p className="text-[#6B6B6B] text-[10px] uppercase tracking-wider font-semibold mb-2.5 px-1">
+          Conversations
+        </p>
         <button
           onClick={createConversation}
           className="w-full flex items-center justify-center gap-2 px-3 py-2.5 bg-[#C8A84B] hover:bg-[#B89638] text-white text-xs font-semibold rounded-lg transition-colors"
@@ -170,9 +143,8 @@ export default function Sidebar() {
       {/* Conversation history */}
       <div className="flex-1 overflow-y-auto scrollbar-thin px-2 py-2 space-y-0.5">
         {conversations.length === 0 ? (
-          <p className="text-[#6B6B6B] text-[11px] text-center py-6 px-2">
-            No conversations yet.
-            <br />Start by asking a question.
+          <p className="text-[#6B6B6B] text-[11px] text-center py-8 px-3 leading-relaxed">
+            No conversations yet. Use the prompt builder above to get started.
           </p>
         ) : (
           conversations.map((conv) => (

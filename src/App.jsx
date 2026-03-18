@@ -5,15 +5,16 @@ import { useConversation } from './hooks/useConversation';
 import Sidebar from './components/Sidebar';
 import ChatArea from './components/ChatArea';
 import SourceDrawer from './components/SourceDrawer';
+import ConversationHeader from './components/ConversationHeader';
+import UseCasePanel from './components/UseCasePanel';
 
 function AppShell() {
-  const { openSourceDrawer, activeSourceData } = useConversation();
+  const { openSourceDrawer, activeSourceData, sendMessage } = useConversation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [useCasesOpen, setUseCasesOpen] = useState(false);
 
   const handleOpenSourceDrawer = () => {
-    if (activeSourceData) {
-      openSourceDrawer(activeSourceData);
-    }
+    if (activeSourceData) openSourceDrawer(activeSourceData);
   };
 
   return (
@@ -36,7 +37,7 @@ function AppShell() {
         {sidebarOpen ? <X size={16} /> : <Menu size={16} />}
       </button>
 
-      {/* Sidebar */}
+      {/* Left sidebar — conversations only */}
       <div
         className={`
           fixed md:relative inset-y-0 left-0 z-30 flex-shrink-0 transition-transform duration-300 md:transition-none
@@ -47,9 +48,26 @@ function AppShell() {
         <Sidebar />
       </div>
 
-      {/* Main chat area */}
+      {/* Main column */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <ChatArea onOpenSourceDrawer={handleOpenSourceDrawer} />
+        {/* Top header: brand + model selector + use cases toggle */}
+        <ConversationHeader
+          onToggleUseCases={() => setUseCasesOpen((v) => !v)}
+          useCasesOpen={useCasesOpen}
+          onOpenSourceDrawer={activeSourceData ? handleOpenSourceDrawer : null}
+        />
+
+        {/* Body row: chat + optional right panel */}
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          <ChatArea />
+
+          {/* Use cases right panel */}
+          <UseCasePanel
+            open={useCasesOpen}
+            onClose={() => setUseCasesOpen(false)}
+            onSend={(prompt) => { sendMessage(prompt); setUseCasesOpen(false); }}
+          />
+        </div>
       </main>
 
       {/* Source drawer */}
