@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Plus, MessageSquare, Trash2, Edit2, Check, X, MoreHorizontal, Unplug } from 'lucide-react';
 import { useConversation } from '../hooks/useConversation';
-import { availableModels } from '../data/promptTemplates';
+import { llmProviders } from '../data/promptTemplates';
 
 function ConversationItem({ conv, isActive, onSelect, onDelete, onRename }) {
   const [hovered, setHovered] = useState(false);
@@ -120,7 +120,8 @@ export default function Sidebar() {
     disconnectMCP,
   } = useConversation();
 
-  const connectedModel = availableModels.find((m) => m.id === mcpConnection.modelId);
+  const connectedProvider = llmProviders.find((p) => p.id === mcpConnection.providerId);
+  const connectedModel = connectedProvider?.models.find((m) => m.id === mcpConnection.modelId);
 
   const handleDisconnect = () => {
     const hasConversations = conversations.length > 0;
@@ -175,6 +176,9 @@ export default function Sidebar() {
           <div className="w-1.5 h-1.5 rounded-full bg-[#27AE60] flex-shrink-0" />
           <p className="text-[10px] text-[#6B6B6B] truncate flex-1">
             {connectedModel ? connectedModel.label : mcpConnection.modelId}
+            {connectedProvider && (
+              <span style={{ color: '#C8C4BC' }}> · {connectedProvider.label.split(' ')[0]}</span>
+            )}
           </p>
         </div>
         <button

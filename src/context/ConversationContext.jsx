@@ -56,17 +56,18 @@ export function ConversationProvider({ children }) {
     status: 'disconnected', // 'disconnected' | 'connecting' | 'connected'
     serverUrl: '',
     apiKey: '',
-    modelId: 'gpt-5-2',
+    modelId: null,
+    providerId: null,
   });
 
-  const connectMCP = useCallback(async ({ serverUrl, apiKey, modelId }) => {
-    setMcpConnection({ status: 'connecting', serverUrl, apiKey, modelId });
+  const connectMCP = useCallback(async ({ serverUrl, apiKey, modelId, providerId }) => {
+    setMcpConnection({ status: 'connecting', serverUrl, apiKey, modelId, providerId });
     await new Promise((r) => setTimeout(r, 1200));
-    setMcpConnection({ status: 'connected', serverUrl, apiKey, modelId });
+    setMcpConnection({ status: 'connected', serverUrl, apiKey, modelId, providerId });
   }, []);
 
   const disconnectMCP = useCallback(() => {
-    setMcpConnection({ status: 'disconnected', serverUrl: '', apiKey: '', modelId: 'gpt-5-2' });
+    setMcpConnection({ status: 'disconnected', serverUrl: '', apiKey: '', modelId: null, providerId: null });
     setConversations([]);
     setActiveConversationId(null);
     setSourceDrawerOpen(false);
