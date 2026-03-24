@@ -26,7 +26,7 @@ function BackButton({ onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center gap-1 text-xs mb-6 transition-colors"
+      className="inline-flex items-center gap-1 text-xs mt-3 mb-8 transition-colors"
       style={{ color: '#6B6B6B' }}
       onMouseEnter={(e) => (e.currentTarget.style.color = '#1A1A1A')}
       onMouseLeave={(e) => (e.currentTarget.style.color = '#6B6B6B')}
@@ -83,6 +83,7 @@ function StepModel({ provider, selectedModelId, onSelect, onBack }) {
       <h1 className="text-xl font-semibold mb-1" style={{ color: '#1A1A1A' }}>
         Choose a model
       </h1>
+
       <p className="text-sm mb-6 leading-relaxed" style={{ color: '#6B6B6B' }}>
         {provider.label} — select the model you'd like to use.
       </p>
@@ -144,6 +145,7 @@ function StepApiKey({ provider, modelId, onBack, onConnect, isConnecting }) {
       <h1 className="text-xl font-semibold mb-1" style={{ color: '#1A1A1A' }}>
         Add your API key
       </h1>
+
       <p className="text-sm mb-6 leading-relaxed" style={{ color: '#6B6B6B' }}>
         {provider.label} · {model?.label}
       </p>
