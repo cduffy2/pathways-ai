@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { Plus, MessageSquare, Trash2, Edit2, Check, X, MoreHorizontal } from 'lucide-react';
+import { Plus, MessageSquare, Trash2, Edit2, Check, X, MoreHorizontal, Unplug } from 'lucide-react';
 import { useConversation } from '../hooks/useConversation';
+import { availableModels } from '../data/promptTemplates';
 
 function ConversationItem({ conv, isActive, onSelect, onDelete, onRename }) {
   const [hovered, setHovered] = useState(false);
@@ -115,7 +116,19 @@ export default function Sidebar() {
     createConversation,
     deleteConversation,
     renameConversation,
+    mcpConnection,
+    disconnectMCP,
   } = useConversation();
+
+  const connectedModel = availableModels.find((m) => m.id === mcpConnection.modelId);
+
+  const handleDisconnect = () => {
+    const hasConversations = conversations.length > 0;
+    if (hasConversations) {
+      if (!window.confirm('Disconnecting will clear all conversations. Continue?')) return;
+    }
+    disconnectMCP();
+  };
 
   return (
     <aside
@@ -154,6 +167,23 @@ export default function Sidebar() {
             />
           ))
         )}
+      </div>
+
+      {/* Footer: connected model + disconnect */}
+      <div className="px-3 py-3 border-t border-[#E0DDD7]">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-[#27AE60] flex-shrink-0" />
+          <p className="text-[10px] text-[#6B6B6B] truncate flex-1">
+            {connectedModel ? connectedModel.label : mcpConnection.modelId}
+          </p>
+        </div>
+        <button
+          onClick={handleDisconnect}
+          className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-[11px] text-[#6B6B6B] hover:text-[#C0392B] hover:bg-[#F2F0EB] transition-colors"
+        >
+          <Unplug size={11} />
+          Disconnect
+        </button>
       </div>
 
     </aside>

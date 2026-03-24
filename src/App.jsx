@@ -7,9 +7,14 @@ import ChatArea from './components/ChatArea';
 import SourceDrawer from './components/SourceDrawer';
 import ConversationHeader from './components/ConversationHeader';
 import UseCasePanel from './components/UseCasePanel';
+import ConnectionScreen from './components/ConnectionScreen';
 
 function AppShell() {
-  const { openSourceDrawer, activeSourceData, sendMessage } = useConversation();
+  const { openSourceDrawer, activeSourceData, sendMessage, mcpConnection } = useConversation();
+
+  if (mcpConnection.status !== 'connected') {
+    return <ConnectionScreen />;
+  }
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [useCasesOpen, setUseCasesOpen] = useState(false);
 

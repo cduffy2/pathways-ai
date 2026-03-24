@@ -52,6 +52,28 @@ const simulateAssistantResponse = async (userMessage, onToken, onDone) => {
 };
 
 export function ConversationProvider({ children }) {
+  const [mcpConnection, setMcpConnection] = useState({
+    status: 'disconnected', // 'disconnected' | 'connecting' | 'connected'
+    serverUrl: '',
+    apiKey: '',
+    modelId: 'gpt-5-2',
+  });
+
+  const connectMCP = useCallback(async ({ serverUrl, apiKey, modelId }) => {
+    setMcpConnection({ status: 'connecting', serverUrl, apiKey, modelId });
+    await new Promise((r) => setTimeout(r, 1200));
+    setMcpConnection({ status: 'connected', serverUrl, apiKey, modelId });
+  }, []);
+
+  const disconnectMCP = useCallback(() => {
+    setMcpConnection({ status: 'disconnected', serverUrl: '', apiKey: '', modelId: 'gpt-5-2' });
+    setConversations([]);
+    setActiveConversationId(null);
+    setSourceDrawerOpen(false);
+    setActiveSourceData(null);
+    setWorkflowBannerVisible(false);
+  }, []);
+
   const [conversations, setConversations] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -243,6 +265,9 @@ export function ConversationProvider({ children }) {
   return (
     <ConversationContext.Provider
       value={{
+        mcpConnection,
+        connectMCP,
+        disconnectMCP,
         conversations,
         activeConversation,
         activeConversationId,
